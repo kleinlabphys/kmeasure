@@ -147,10 +147,7 @@ class GateTester:
             self.main.update_plot_data(voltage_V, current_A)
             self.timestamp += 1
 
-
-
 if __name__ == "__main__":
-    import random
     from qcodes.instrument_drivers.Keithley import Keithley2450
 
     keithley_1_ip_addr = '192.168.1.30'

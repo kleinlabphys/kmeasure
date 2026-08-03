@@ -16,7 +16,8 @@ dependencies = [
     "qcodes>=0.38.0",
     "zhinst.qcodes",
     "pyqtgraph",
-    "PySide6"
+    "PySide6",
+    "pyvisa-py"
 ]
 
 [project.optional-dependencies]
