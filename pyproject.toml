@@ -14,4 +14,12 @@ authors = [
 dependencies = [
     "numpy>=1.24.0",
     "qcodes>=0.38.0",
+    "zhinst.qcodes",
+    "pyqtgraph",
+    "PySide6"
+]
+
+[project.optional-dependencies]
+dev = [
+    "jupyter",
 ]
