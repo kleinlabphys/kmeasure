@@ -2,7 +2,17 @@ import time
 import threading
 import numpy as np
 
-def ramp(param, setpoint, slew_rate=0.1, param_increment=0.01, min_inter_delay=0.05, verbose=False, blocking=True):
+def ramp(
+        param, 
+        setpoint, 
+        slew_rate=0.1, 
+        param_increment=0.01, 
+        min_inter_delay=0.05, 
+        verbose=False,
+        blocking=True, 
+        keithley_mode=False, 
+        keithley_qcodes_obj=None
+    ):
     '''
     Ramps a QCoDeS parameter (`param`) from its current value to `setpoint` at `slew_rate` in
     steps of `param_increment` with a minimum delay between increments of `min_inter_delay`.
@@ -10,6 +20,8 @@ def ramp(param, setpoint, slew_rate=0.1, param_increment=0.01, min_inter_delay=0
     Profile of a ramped parameter looks like a staircase.
 
     `blocking`=False will run the ramp on a separate thread and return the Thread object
+
+    `keithley_mode`=True ensures that Keithley 2450 current sense mode is set to 100 mA
 
     Args:
     param (QCoDeS parameter): 
@@ -21,11 +33,18 @@ def ramp(param, setpoint, slew_rate=0.1, param_increment=0.01, min_inter_delay=0
     blocking (bool):
     '''
 
+    if keithley_mode:
+        if keithley_qcodes_obj is not None:
+            if keithley_qcodes_obj.sense.range() != 1e-1:
+                keithley_qcodes_obj.sense.range(1e-1)
+        else:
+            raise ValueError('[RAMP] When keithley_mode is True, keithley_qcodes_obj must be specified.')
+
     if slew_rate == 0:
-        raise ValueError('[RAMP] ramp slew_rate must not be 0.')
+        raise ValueError('[RAMP] Ramp slew_rate must not be 0.')
         
     if param_increment == 0:
-        raise ValueError('[RAMP] ramp param_increment must not be 0.')
+        raise ValueError('[RAMP] Ramp param_increment must not be 0.')
 
     stop_event = threading.Event()
 
@@ -60,7 +79,6 @@ def ramp(param, setpoint, slew_rate=0.1, param_increment=0.01, min_inter_delay=0
 
         if verbose:
             print('[RAMP] Finished ramping.')
-
 
     if blocking:
         _execute_ramp()
